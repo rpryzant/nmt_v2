@@ -2,7 +2,7 @@ from collections import namedtuple
 
 import tensorflow as tf
 
-import utils.vocab_utils as vocab_utils
+import utils
 
 
 class BatchedInput(namedtuple("BatchedInput",
@@ -59,7 +59,7 @@ def get_iterator(src_file, tgt_file, src_vocab_file, tgt_vocab_file, config, thr
     src_dataset = tf.contrib.data.TextLineDataset(src_file)
     tgt_dataset = tf.contrib.data.TextLineDataset(tgt_file)
     src_vocab_table, tgt_vocab_table, reverse_tgt_vocab_table = \
-        vocab_utils.create_vocab_tables(
+        utils.create_vocab_tables(
             src_vocab_file, tgt_vocab_file, config)
 
     src_eos_id = tf.cast(

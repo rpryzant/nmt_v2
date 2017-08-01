@@ -111,8 +111,9 @@ class BaseModel(object):
         else:
             self.preds = tf.argmax(self.logits, axis=2)
             self.train_op = self._make_training_op()
-            self.predict_count = tf.reduce_sum(
-                self.iterator.target_sequence_length)
+            self.word_count = tf.reduce_sum(
+                self.iterator.target_sequence_length) + tf.reduce_sum(
+                self.iterator.source_sequence_length)
 
         # remember inputs + outputs
         self.step_src = self.iterator.source
@@ -248,11 +249,25 @@ class BaseModel(object):
             labels=targets, logits=logits)
         mask = tf.sequence_mask(seq_lens, max_time, dtype=logits.dtype)
         loss = tf.reduce_sum(crossent * mask) / tf.to_float(tf.reduce_sum(seq_lens))
-        tf.summary.scalar("loss", loss)
         return loss
 
     def _make_training_op(self):
-        optimizer = tf.train.AdamOptimizer(self.config.learning_rate)
+        if self.config.optimizer == 'sgd':
+            self.learning_rate = tf.cond(
+                self.global_step < self.config.start_decay_step,
+                lambda: tf.constant(self.config.learning_rate),
+                lambda: tf.train.exponential_decay(
+                    self.config.learning_rate,
+                    self.config.decay_steps,
+                    self.config.decay_factor,
+                    staircase=True),
+                name='learning_rate')
+            optimizer = tf.train.GradientDescentOptimizer(self.learning_rate)
+        elif self.config.optimizer == 'adam':
+            assert self.config.learning_rate < 0.007
+            self.learning_rate = tf.constant(self.config.learning_rate)
+            optimizer = tf.train.AdamOptimizer(self.learning_rate)
+
         params = tf.trainable_variables()
         gradients = tf.gradients(self.loss, params)
         clipped_gradients, gradient_norm = tf.clip_by_global_norm(
@@ -260,6 +275,7 @@ class BaseModel(object):
 
         tf.summary.scalar("grad_norm", gradient_norm)
         tf.summary.scalar("clipped_norm", tf.global_norm(clipped_gradients))
+        tf.summary.scalar("learning_rate", self.learning_rate)
 
         train_op = optimizer.apply_gradients(
             zip(clipped_gradients, params), global_step=self.global_step)
@@ -269,7 +285,11 @@ class BaseModel(object):
 
     def train(self, sess, debug=False):
         assert self.mode == "train"
-        ops = [self.train_op, self.loss, self.predict_count, self.global_step, self.summaries]
+        ops = [self.train_op,
+               self.loss,
+               self.word_count,
+               self.global_step,
+               self.summaries]
         if debug:
             ops += [self.step_src, self.step_src_len, self.step_tgt, self.step_tgt_len, self.preds]
 
@@ -278,7 +298,7 @@ class BaseModel(object):
 
     def eval(self, sess):
         assert self.mode == "eval"
-        return sess.run([self.loss, self.predict_count])
+        return sess.run([self.loss, self.word_count])
 
 
     def test(self, sess):

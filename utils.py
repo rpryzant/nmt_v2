@@ -31,3 +31,11 @@ def create_vocab_tables(src_vocab_file, tgt_vocab_file, config):
 
     return src_vocab_table, tgt_vocab_table, reverse_tgt_vocab_table
 
+
+def add_summary(summary_writer, global_step, tag, value):
+  """Add a new summary to the current summary_writer.
+  Useful to log things that are not part of the training graph, e.g., tag=BLEU.
+  """
+  summary = tf.Summary(value=[tf.Summary.Value(tag=tag, simple_value=value)])
+  summary_writer.add_summary(summary, global_step)
+

@@ -4,7 +4,7 @@ import os
 import tensorflow as tf
 
 import model_base
-import vocab_utils
+import utils
 import input_pipeline
 
 
@@ -26,7 +26,7 @@ def build_inference_graph(model_creator, config):
         tgt_vocab_file = os.path.join(config.data_dir, "%s.%s" % (config.vocab_prefix, config.tgt))
 
         src_vocab_table, tgt_vocab_table, reverse_tgt_vocab_table = \
-            vocab_utils.create_vocab_tables(
+            utils.create_vocab_tables(
                 src_vocab_file, tgt_vocab_file, config)
 
         src_placeholder = tf.placeholder(shape=[None], dtype=tf.string)

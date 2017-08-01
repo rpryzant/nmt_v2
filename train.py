@@ -2,13 +2,16 @@ import tensorflow as tf
 import os
 import numpy as np
 import math
+import time
 
 import model_base
 import models
 import input_pipeline
-import vocab_utils as vocab_utils
+import utils
 import inference
 
+# shut up tensorflow warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 
 def run_sample_decode(test_model, test_sess, out_dir, config, 
@@ -17,8 +20,6 @@ def run_sample_decode(test_model, test_sess, out_dir, config,
     with test_model.graph.as_default():
         loaded_test_model, global_step = model_base.create_or_load_model(
             test_model.model, out_dir, test_sess, "test")
-
-
 
     test_sess.run(test_model.iterator.initializer,
         feed_dict={
@@ -47,13 +48,11 @@ def run_eval(eval_model, eval_sess, out_dir, config, summary_writer):
     eval_sess.run(eval_model.iterator.initializer)
 
     total_loss = 0
-    total_predictions = 0
     total_batches = 0
     while True:
         try:
-            loss, predict_count = loaded_eval_model.eval(eval_sess)
+            loss, word_count = loaded_eval_model.eval(eval_sess)
             total_loss += loss
-            total_predictions += predict_count
             total_batches += 1
         except tf.errors.OutOfRangeError:
             break
@@ -92,48 +91,56 @@ def train(config):
 
     train_sess.run(train_model.iterator.initializer)
 
+    total_time, total_loss, total_word_count = 0, 0, 0
+    
     while global_step < config.num_train_steps:
+        start_time = time.time()
         try:
             step_result = loaded_train_model.train(train_sess, debug=True)
-            _, loss, predict_count, global_step, summary, src, src_len,  tgt, tgt_len, preds = step_result
-            print loss
-            print src
-            print src_len
-            print tgt
-            print tgt_len
-            print preds
-            print
+            _, loss, word_count, global_step, \
+            summary, src, src_len,  tgt, tgt_len, preds = step_result
+            utils.add_summary(summary_writer, global_step, "train-loss", loss)
         except tf.errors.OutOfRangeError:
             # epoch is done 
             train_sess.run(train_model.iterator.initializer)
 
-
-
-
-
-
         summary_writer.add_summary(summary, global_step)
-        print global_step, config.steps_per_eval
+        total_time += (time.time() - start_time)
+        total_loss += loss
+        total_word_count += word_count
+
+        if global_step % config.steps_per_stats == 0:
+            avg_loss = total_loss / config.steps_per_stats
+            avg_step_time = total_time / config.steps_per_stats
+            # time.time() is in milliseconds
+            words_per_second = total_word_count / total_time
+            print 'INFO: ' + \
+                  ' step %d lr %g step-time %.2fs wps %.2f loss %.2f' % \
+                  (global_step,
+                    loaded_train_model.learning_rate.eval(session=train_sess),
+                    avg_step_time, words_per_second, avg_loss)
+            total_time, total_loss, total_word_count = 0, 0, 0
+
+
         if global_step % config.steps_per_eval == 0:
             # save and evaluate
             loaded_train_model.saver.save(
                 train_sess,
                 os.path.join(out_dir, "model.ckpt"),
                 global_step=global_step)
-
-            # with train_model.graph.as_default():
-            #     variables_names = [v.name for v in tf.trainable_variables()]
-            #     values = train_sess.run(variables_names)
-            #     for k, v in zip(variables_names, values):
-            #         print k
-            # print
-
-            run_sample_decode(
-                test_model, test_sess, out_dir, config, summary_writer, test_src, test_tgt)
-
+            print global_step
             eval_loss = run_eval(
                 eval_model, eval_sess, out_dir, config, summary_writer)
+            utils.add_summary(summary_writer, global_step, "eval-loss", eval_loss)
             print 'EVAL LOSS ', eval_loss
+
+            print global_step
+
+        if global_step % config.steps_per_sample == 0:
+            pass
+            # do inference on a sample
+            # run_sample_decode(
+            #     test_model, test_sess, out_dir, config, summary_writer, test_src, test_tgt)
 
 
 

@@ -2,7 +2,7 @@ data_dir: "data/"
 src: "en"
 tgt: "vi"
 vocab_prefix: "vocab"
-train_prefix: "train_overfit"
+train_prefix: "train"
 eval_prefix: "tst2012"
 test_prefix: "train_overfit"
 
@@ -21,9 +21,17 @@ share_vocab: False
 
 batch_size: 4
 num_train_steps: 12000
-steps_per_stats: 100
-steps_per_eval: 1
+steps_per_stats: 50
+steps_per_sample: 100000
+steps_per_eval: 100
 num_buckets: 1
+
+optimizer: 'adam'
+learning_rate: 0.001
+start_decay_step: 0
+decay_steps: 10000
+decay_factor: 0.98
+
 
 attention: False
 random_seed: 1
@@ -32,7 +40,6 @@ dropout: 0.2
 encoder_type: "bi"
 max_gradient_norm: 5.0
 init_weight: 0.1
-learning_rate: 0.001
 src_embed_size: 36
 tgt_embed_size: 36
 num_units: 64
