@@ -1,0 +1,42 @@
+data_dir: "data/"
+src: "en"
+tgt: "vi"
+vocab_prefix: "vocab"
+train_prefix: "train_overfit"
+eval_prefix: "tst2012"
+test_prefix: "train_overfit"
+
+out_dir: "output"
+
+sos: "<s>"
+eos: "</s>"
+unk: "<unk>"
+
+src_max_len: 50
+tgt_max_len: 50
+src_vocab_size: 10
+tgt_vocab_size: 10
+reverse_src: True
+share_vocab: False
+
+batch_size: 4
+num_train_steps: 12000
+steps_per_stats: 100
+steps_per_eval: 1
+num_buckets: 1
+
+attention: False
+random_seed: 1
+forget_bias: 1.0
+dropout: 0.2
+encoder_type: "bi"
+max_gradient_norm: 5.0
+init_weight: 0.1
+learning_rate: 0.001
+src_embed_size: 36
+tgt_embed_size: 36
+num_units: 64
+num_layers: 2
+
+beam_width: 10
+length_penalty_weight: 0.01

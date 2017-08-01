@@ -1,2 +1,3 @@
-# nmt_v2
-second take at a nmt system
+Me fooling around with the nmt implementation of
+
+https://github.com/tensorflow/nmt
