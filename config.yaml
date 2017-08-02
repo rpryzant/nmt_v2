@@ -2,7 +2,7 @@ data_dir: "data/"
 src: "en"
 tgt: "vi"
 vocab_prefix: "vocab"
-train_prefix: "train"
+train_prefix: "train_overfit"
 eval_prefix: "tst2012"
 test_prefix: "train_overfit"
 
@@ -21,10 +21,11 @@ share_vocab: False
 
 batch_size: 4
 num_train_steps: 12000
-steps_per_stats: 50
-steps_per_sample: 100000
-steps_per_eval: 100
+steps_per_stats: 100
+steps_per_sample: 1
+steps_per_eval: 10000
 num_buckets: 1
+sample_decodings: 4
 
 optimizer: 'adam'
 learning_rate: 0.001

@@ -9,6 +9,7 @@ import models
 import input_pipeline
 import utils
 import inference
+import evaluation
 
 # shut up tensorflow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
@@ -21,22 +22,22 @@ def run_sample_decode(test_model, test_sess, out_dir, config,
         loaded_test_model, global_step = model_base.create_or_load_model(
             test_model.model, out_dir, test_sess, "test")
 
+    decode_ids = np.random.choice(len(src_file), config.sample_decodings)
+    decoding_src = [src_file[id] for id in decode_ids]
+    decoding_tgt = [tgt_file[id] for id in decode_ids]
+
     test_sess.run(test_model.iterator.initializer,
         feed_dict={
-            test_model.src_placeholder: src_file,
-            test_model.batch_size_placeholder: 4
+            test_model.src_placeholder: decoding_src,
+            test_model.batch_size_placeholder: config.batch_size
         })
 
     _, nmt_outputs = loaded_test_model.test(test_sess)
-
-    for x in  tgt_file:
-        print x
-    
-    for output in nmt_outputs:
-        print output.shape
-        print ' '.join(x for x in output[:,0])
-    quit()
-
+    for src, tgt, pred in zip(decoding_src, decoding_tgt, nmt_outputs):
+        print 'src: ', src
+        print 'tgt: ', tgt
+        print 'nmt: ', inference.format_decoding(pred, target_beam=0, eos=config.eos)
+        print
 
 
 def run_eval(eval_model, eval_sess, out_dir, config, summary_writer):
@@ -137,10 +138,11 @@ def train(config):
             print global_step
 
         if global_step % config.steps_per_sample == 0:
-            pass
+            # TODO -- RUN INFERENCE OVER EVERYTHING AND SAVE INTO A FILE
+
             # do inference on a sample
-            # run_sample_decode(
-            #     test_model, test_sess, out_dir, config, summary_writer, test_src, test_tgt)
+            run_sample_decode(
+                 test_model, test_sess, out_dir, config, summary_writer, test_src, test_tgt)
 
 
 

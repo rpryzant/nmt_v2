@@ -43,3 +43,15 @@ def build_inference_graph(model_creator, config):
     return model_base.Model(graph=graph, model=model, iterator=iterator, src_file=src_file, tgt_file=tgt_file, src_placeholder=src_placeholder, batch_size_placeholder=batch_size_placeholder)
 
 
+def format_decoding(outputs, target_beam=None, eos=None):
+    output = list(outputs[:,target_beam])  # if np.ndarray
+
+    if eos and eos in output:
+        output = output[:output.index(eos)]
+
+    output = " ".join(output)
+
+    return output
+
+
+
