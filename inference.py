@@ -9,6 +9,37 @@ import input_pipeline
 
 
 
+
+def translate_file(test_model, test_sess, out_file, eos, src_file):
+    # TODO take out dir too
+    with test_model.graph.as_default():
+        loaded_test_model, global_step = model_base.create_or_load_model(
+            test_model.model, out_dir, test_sess, "test")
+
+    test_sess.run(test_model.iterator.initializer,
+        feed_dict={test_model.src_placeholder: src_file})
+
+    print ' translating source'
+
+    preds = None
+    while True:
+        try:
+            _, nmt_outputs = loaded_test_model.test(test_sess)
+            preds = nmt_outputs if preds is None else np.concatenate(preds, nmt_outputs, axis=0)
+        except:
+            break
+
+    nmt_outputs = [
+        inference.format_decoding(pred, target_beam=0, eos=eos) \
+        for pred in preds]
+
+    print ' writing translations to ', out_file
+
+    with open(out_file, 'w') as f:
+        f.write('\n'.join(nmt_outputs))
+
+
+
 def load_data(filepath):
     with codecs.getreader("utf-8")(open(filepath)) as f:
         data = f.read().splitlines()
