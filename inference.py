@@ -1,43 +1,38 @@
 import codecs
 import os
+import numpy as np
 
 import tensorflow as tf
 
 import model_base
 import utils
 import input_pipeline
-
+from tqdm import tqdm
 
 
 
 def translate_file(test_model, test_sess, out_file, eos, src_file):
-    # TODO take out dir too
     with test_model.graph.as_default():
         loaded_test_model, global_step = model_base.create_or_load_model(
-            test_model.model, out_dir, test_sess, "test")
+            test_model.model, out_file, test_sess, "test")
 
     test_sess.run(test_model.iterator.initializer,
         feed_dict={test_model.src_placeholder: src_file})
 
     print ' translating source'
-
-    preds = None
-    while True:
-        try:
-            _, nmt_outputs = loaded_test_model.test(test_sess)
-            preds = nmt_outputs if preds is None else np.concatenate(preds, nmt_outputs, axis=0)
-        except:
-            break
-
-    nmt_outputs = [
-        inference.format_decoding(pred, target_beam=0, eos=eos) \
-        for pred in preds]
+    with tqdm(total=len(src_file)) as prog:
+        outputs = []
+        while True:
+            try:
+                _, nmt_outputs = loaded_test_model.test(test_sess)
+                outputs += [format_decoding(o, eos=eos) for o in nmt_outputs]
+                prog.update(nmt_outputs.shape[0])
+            except tf.errors.OutOfRangeError:
+                break
 
     print ' writing translations to ', out_file
-
     with open(out_file, 'w') as f:
-        f.write('\n'.join(nmt_outputs))
-
+        f.write('\n'.join(outputs))
 
 
 def load_data(filepath):
@@ -74,7 +69,7 @@ def build_inference_graph(model_creator, config):
     return model_base.Model(graph=graph, model=model, iterator=iterator, src_file=src_file, tgt_file=tgt_file, src_placeholder=src_placeholder, batch_size_placeholder=batch_size_placeholder)
 
 
-def format_decoding(outputs, target_beam=None, eos=None):
+def format_decoding(outputs, target_beam=0, eos=None):
     output = list(outputs[:,target_beam])  # if np.ndarray
 
     if eos and eos in output:

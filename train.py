@@ -33,12 +33,13 @@ def run_sample_decode(test_model, test_sess, out_dir, config,
         })
 
     _, nmt_outputs = loaded_test_model.test(test_sess)
-    for src, tgt, pred in zip(decoding_src, decoding_tgt, nmt_outputs):
+    for i, (src, tgt, pred) in enumerate(zip(decoding_src, decoding_tgt, nmt_outputs)):
         print 'src: ', src
         print 'tgt: ', tgt
         print 'nmt: ', inference.format_decoding(pred, target_beam=0, eos=config.eos)
         print
-
+        if i >= config.sample_decodings:
+            break
 
 def run_eval(eval_model, eval_sess, out_dir, config, summary_writer):
     # TODO -- WRITE SUMMARIES FROM THIS

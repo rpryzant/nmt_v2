@@ -23,7 +23,7 @@ batch_size: 4
 num_train_steps: 12000
 steps_per_stats: 100
 steps_per_sample: 500
-steps_per_eval: 1000
+steps_per_eval: 100
 num_buckets: 1
 sample_decodings: 4
 
