@@ -41,13 +41,12 @@ class VanillaModel(BaseModel):
 
 
 class DotAttentionModel(VanillaModel):
-    # TODO - get attentional scores back, diagnostic plots, etc etc
-    # TODO -- FIX BUG!!
+    # TODO -- MAKE SELF.MODE A CONSTANT
 
     def _build_decoder_cell(self, encoder_outputs, encoder_state):
         source_sequence_length = self.iterator.source_sequence_length
 
-        if self.mode == 'inference' and self.config.beam_width > 0:
+        if self.mode == 'test' and self.config.beam_width > 0:
             memory = tf.contrib.seq2seq.tile_batch(
                 encoder_outputs, multiplier=self.config.beam_width)
             source_sequence_length = tf.contrib.seq2seq.tile_batch(
