@@ -71,7 +71,7 @@ def train(config):
     if not config.attention:
         model_creator = models.VanillaModel
     else:
-        model_creator = models.AttentionModel
+        model_creator = models.DotAttentionModel
 
     train_model = model_base.build_model_graph(model_creator, config, "train")
     eval_model = model_base.build_model_graph(model_creator, config, "eval")

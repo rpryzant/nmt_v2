@@ -2,7 +2,7 @@ data_dir: "data/"
 src: "en"
 tgt: "vi"
 vocab_prefix: "vocab"
-train_prefix: "train"
+train_prefix: "train_overfit"
 eval_prefix: "tst2012"
 test_prefix: "tst2013"
 
@@ -22,8 +22,8 @@ share_vocab: False
 batch_size: 4
 num_train_steps: 12000
 steps_per_stats: 100
-steps_per_sample: 500
-steps_per_eval: 100
+steps_per_sample: 1
+steps_per_eval: 1000
 num_buckets: 1
 sample_decodings: 4
 
@@ -34,7 +34,7 @@ decay_steps: 10000
 decay_factor: 0.98
 
 
-attention: False
+attention: True
 random_seed: 1
 forget_bias: 1.0
 dropout: 0.2
