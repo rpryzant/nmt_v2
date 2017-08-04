@@ -128,14 +128,20 @@ class BaseModel(object):
 
     def make_embeddings(self):
         with tf.variable_scope("embeddings"):
-            with tf.variable_scope("encoder"):
-                encoder_embeddings = tf.get_variable(
-                    "embedding_encoder",
-                    [self.src_vocab_size, self.config.src_embed_size])
-            with tf.variable_scope("decoder"):
-                decoder_embeddings = tf.get_variable(
-                    "embedding_decoder",
-                    [self.tgt_vocab_size, self.config.tgt_embed_size])
+            if self.config.share_vocab:
+                embedding = tf.get_variable(
+                    "embedding_share", [self.src_vocab_size, self.config.src_embed_size])
+                encoder_embeddings = embedding
+                decoder_embeddings = embedding
+            else:
+                with tf.variable_scope("encoder"):
+                    encoder_embeddings = tf.get_variable(
+                        "embedding_encoder",
+                        [self.src_vocab_size, self.config.src_embed_size])
+                with tf.variable_scope("decoder"):
+                    decoder_embeddings = tf.get_variable(
+                        "embedding_decoder",
+                        [self.tgt_vocab_size, self.config.tgt_embed_size])
 
         return encoder_embeddings, decoder_embeddings
 

@@ -26,8 +26,9 @@ def create_vocab_tables(src_vocab_file, tgt_vocab_file, config):
         tgt_vocab_table = lookup_ops.index_table_from_file(
             tgt_vocab_file, default_value=UNK_ID)
 
+    vocab_file = src_vocab_file if config.share_vocab else tgt_vocab_file
     reverse_tgt_vocab_table = lookup_ops.index_to_string_table_from_file(
-        tgt_vocab_file, default_value=config.unk)
+        vocab_file, default_value=config.unk)
 
     return src_vocab_table, tgt_vocab_table, reverse_tgt_vocab_table
 

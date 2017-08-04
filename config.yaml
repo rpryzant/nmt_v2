@@ -26,7 +26,7 @@ tgt_max_len: 50
 src_vocab_size: 10
 tgt_vocab_size: 10
 reverse_src: True
-share_vocab: False  # TODO -- FIX THIS -- NANS IF SHARED
+share_vocab: True  # TODO -- FIX THIS -- NANS IF SHARED
 
 batch_size: 128
 num_train_steps: 100000
