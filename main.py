@@ -43,7 +43,6 @@ def load_config(filename):
             tgt_vocab_file, c.data_dir, c.sos, c.eos, c.unk)
         c = c._replace(tgt_vocab_size=tgt_vocab_size)
 
-
     if not os.path.exists(c.out_dir):
         os.makedirs(c.out_dir)
 
