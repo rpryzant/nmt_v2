@@ -258,6 +258,7 @@ class BaseModel(object):
                 lambda: tf.constant(self.config.learning_rate),
                 lambda: tf.train.exponential_decay(
                     self.config.learning_rate,
+                    (self.global_step - self.config.start_decay_step),
                     self.config.decay_steps,
                     self.config.decay_factor,
                     staircase=True),

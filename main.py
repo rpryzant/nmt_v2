@@ -1,12 +1,30 @@
 import yaml
 from collections import namedtuple
 import os
+import argparse
 
 import model_base
 import models
 import dummies
 import utils
 import train
+
+
+
+
+def process_command_line():
+  """
+  Return a 1-tuple: (args list).
+  `argv` is a list of arguments, or `None` for ``sys.argv[1:]``.
+  """
+
+  parser = argparse.ArgumentParser(description='usage') # add description
+  parser.add_argument('--gpu', dest='gpu', type=str, default='0', help='gpu')
+  args = parser.parse_args()
+  return args
+
+
+
 
 def load_config(filename):
     d = yaml.load(open(filename).read())
@@ -28,8 +46,10 @@ def load_config(filename):
 
     return c
 
-c = load_config("config.yaml")
 
+args = process_command_line()
+os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+c = load_config("config.yaml")
 train.train(c)
 
 

@@ -1,10 +1,19 @@
-data_dir: "data/"
-src: "en"
-tgt: "vi"
-vocab_prefix: "vocab"
-train_prefix: "train_overfit"
-eval_prefix: "tst2012"
-test_prefix: "tst2013"
+#data_dir: "data/"
+#src: "en"
+#tgt: "vi"
+#vocab_prefix: "vocab"
+#train_prefix: "train_overfit"
+#eval_prefix: "tst2012"
+#test_prefix: "tst2013"
+
+data_dir: "ja_data/"
+src: "ja"
+tgt: "en"
+vocab_prefix: "bpe.vocab"
+train_prefix: "kyoto-train.bpe"
+eval_prefix: "kyoto-dev.bpe"
+test_prefix: "kyoto-test.bpe"
+
 
 out_dir: "output"
 
@@ -17,21 +26,21 @@ tgt_max_len: 50
 src_vocab_size: 10
 tgt_vocab_size: 10
 reverse_src: True
-share_vocab: False
+share_vocab: False  # TODO -- FIX THIS -- NANS IF SHARED
 
-batch_size: 4
-num_train_steps: 12000
+batch_size: 128
+num_train_steps: 100000
 steps_per_stats: 100
-steps_per_sample: 1
+steps_per_sample: 300
 steps_per_eval: 1000
-num_buckets: 1
+num_buckets: 5
 sample_decodings: 4
 
 optimizer: 'adam'
-learning_rate: 0.001
-start_decay_step: 0
-decay_steps: 10000
-decay_factor: 0.98
+learning_rate: 0.0001
+start_decay_step: 20000
+decay_steps: 2000
+decay_factor: 0.5
 
 
 attention: True
@@ -41,9 +50,9 @@ dropout: 0.2
 encoder_type: "bi"
 max_gradient_norm: 5.0
 init_weight: 0.1
-src_embed_size: 36
-tgt_embed_size: 36
-num_units: 64
+src_embed_size: 512
+tgt_embed_size: 512
+num_units: 512
 num_layers: 2
 
 beam_width: 10

@@ -128,12 +128,12 @@ def train(config):
 
         if global_step % config.steps_per_eval == 0:
             # record test predictions
-            inference.translate_file(
-                test_model=test_model,
-                test_sess=test_sess,
-                out_file=os.path.join(out_dir, 'translations-%d' % global_step),
-                eos=config.eos,
-                src_file=test_src)
+#            inference.translate_file(
+#                test_model=test_model,
+#                test_sess=test_sess,
+#                out_file=os.path.join(out_dir, 'translations-%d' % global_step),
+#                eos=config.eos,
+#                src_file=test_src)
 
             # save and evaluate
             loaded_train_model.saver.save(
