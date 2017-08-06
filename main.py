@@ -19,6 +19,8 @@ def process_command_line():
     """
 
     parser = argparse.ArgumentParser(description='usage') # add description
+    parser.add_argument('--config', dest='config', type=str, default='config.yaml', 
+                        help='config file for this experiment')
     parser.add_argument('--gpu', dest='gpu', type=str, default='0', help='gpu')
     args = parser.parse_args()
     return args
@@ -51,7 +53,7 @@ def load_config(filename):
 
 args = process_command_line()
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-c = load_config("config.yaml")
+c = load_config(args.config)
 train.train(c)
 
 
