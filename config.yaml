@@ -29,10 +29,10 @@ reverse_src: True
 share_vocab: True  # TODO -- FIX THIS -- NANS IF SHARED
 
 batch_size: 128
-num_train_steps: 100000
+num_train_steps: 200000
 steps_per_stats: 100
-steps_per_sample: 300
-steps_per_eval: 1000
+steps_per_sample: 500
+steps_per_eval: 500
 num_buckets: 5
 sample_decodings: 4
 
