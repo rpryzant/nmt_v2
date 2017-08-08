@@ -51,10 +51,11 @@ def load_config(filename):
     return c
 
 
-args = process_command_line()
-os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
-c = load_config(args.config)
-train.train(c)
+if __name__ == '__main__':
+    args = process_command_line()
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+    c = load_config(args.config)
+    train.train(c)
 
 
 

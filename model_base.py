@@ -52,6 +52,7 @@ def load_model(model, ckpt, session, name):
 
 def create_or_load_model(model, model_dir, session, name):
     latest_ckpt = tf.train.latest_checkpoint(model_dir)
+
     if latest_ckpt:
         model = load_model(model, latest_ckpt, session, name)
     else:

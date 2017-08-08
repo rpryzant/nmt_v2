@@ -11,10 +11,13 @@ from tqdm import tqdm
 
 
 
-def translate_file(test_model, test_sess, out_file, eos, src_file):
+def translate_file(test_model, test_sess, out_dir, eos, src_file):
     with test_model.graph.as_default():
         loaded_test_model, global_step = model_base.create_or_load_model(
-            test_model.model, out_file, test_sess, "test")
+            test_model.model, out_dir, test_sess, "test")
+
+    # TODO - something better than this
+    out_file = out_dir + '/translations.txt'
 
     test_sess.run(test_model.iterator.initializer,
         feed_dict={test_model.src_placeholder: src_file})
@@ -78,6 +81,55 @@ def format_decoding(outputs, target_beam=0, eos=None):
     output = " ".join(output)
 
     return output
+
+
+if __name__ == '__main__':
+    import argparse
+    import models
+    import model_base
+    import main
+    # python inference.py --config .. --gpu ..
+
+    parser = argparse.ArgumentParser(description='usage') # add description
+    parser.add_argument('--config', dest='config', type=str, default='config.yaml', 
+                        help='config file for this experiment')
+    parser.add_argument('--gpu', dest='gpu', type=str, default='0', help='gpu')
+
+    args = parser.parse_args()
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+    config = main.load_config(args.config)
+
+    out_dir = config.out_dir
+
+    if not config.attention:
+        model_creator = models.VanillaModel
+    else:
+        model_creator = models.DotAttentionModel
+
+    print 'INFO: building inference graph, sess, data inputs'
+    test_model = build_inference_graph(model_creator, config)
+    test_sess = tf.Session(graph=test_model.graph)
+
+    test_src = load_data(test_model.src_file)
+    test_tgt = load_data(test_model.tgt_file)
+
+    print 'INFO: translating...'
+    translate_file(
+        test_model=test_model,
+        test_sess=test_sess,
+        out_dir=out_dir,
+        eos=config.eos,
+        src_file=test_src)
+
+    print 'INFO: done!'
+
+
+
+
+
+
+
+
 
 
 
