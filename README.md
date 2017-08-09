@@ -5,14 +5,6 @@ This is my second implementation of an end-to-end neural machine translation sys
 
 My first implementation is here (https://github.com/rpryzant/nmt) and it's not as good.
 
-### Improvements over V1
-  - Simpler structure: fewer classes, no seperate logic for attention, encoding/decoding is rolled into a single model base class
-  - Better training pipeline with periodic sampling
-  - Proper evaluation
-  - Proper inference
-  - Beam search decoding
-  - Better input pipelines (using `tf.Iterator` + `tf.Dataset`
-  - Only the useful stuff is graphed  
 
 ### Usage
 
@@ -38,4 +30,16 @@ python inference.py --config config.yaml
 |------------------------------------|------|
 | Kyoto Free Translation Task (KFTT) | 21.1 |
 | IWSLT English-Vietnamese           | 25.3 |
+
+
+### Improvements over V1
+  - Simpler structure: fewer classes, no seperate logic for attention, encoding/decoding is rolled into a single model base class
+  - Better training pipeline with periodic sampling
+  - Proper evaluation
+  - Proper inference
+  - Beam search decoding
+  - Better input pipelines (using `tf.Iterator` + `tf.Dataset`
+  - Only the useful stuff is written to tensorboard  
+
+
 
