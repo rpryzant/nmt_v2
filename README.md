@@ -1,4 +1,9 @@
 
+TODO 
+ - troubleshoot ja expt
+ - refactor, documentation
+ - tuck away in directory structure
+
 # NMT_V2
 
 This is my second implementation of an end-to-end neural machine translation system. It's based primarily on [[Sundermeyer et al.]](https://pdfs.semanticscholar.org/d29c/f0f457ec2089fd4d776ef9a246de810be689.pdf) and [[Luong et al.]](https://arxiv.org/abs/1508.04025).
