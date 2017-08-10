@@ -28,7 +28,7 @@ python inference.py --config config.yaml
 
 | Dataset | BLEU |
 |------------------------------------|------|
-| Kyoto Free Translation Task (KFTT) | 6.83 (TODO find out wha happened in this expt) |
+| Kyoto Free Translation Task (KFTT) | 6.83 (TODO find out what happened in this expt) |
 | IWSLT English-Vietnamese           | 25.3 |
 
 
