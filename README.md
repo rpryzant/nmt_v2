@@ -1,7 +1,5 @@
 
 TODO 
- - troubleshoot ja expt
- - refactor, documentation
  - tuck away in directory structure
 
 # NMT_V2
@@ -33,7 +31,7 @@ python inference.py --config config.yaml
 
 | Dataset | BLEU |
 |------------------------------------|------|
-| Kyoto Free Translation Task (KFTT) | 6.83 (TODO find out what happened in this expt) |
+| ASPEC | 35.83  |
 | IWSLT English-Vietnamese           | 25.3 |
 
 
